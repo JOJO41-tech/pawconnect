@@ -400,16 +400,7 @@ export default function AnimalDetailsPage() {
                     </a>
                   )}
 
-                  {animal.verification_link && (
-                    <a
-                      href={animal.verification_link}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="border border-green-700 text-green-700 px-6 py-3 rounded-xl font-bold hover:bg-green-50"
-                    >
-                      Visit Shelter Page
-                    </a>
-                  )}
+             
                 </div>
               </section>
 
