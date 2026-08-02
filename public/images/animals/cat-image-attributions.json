@@ -1,0 +1,110 @@
+[
+  {
+    "animalId": 51,
+    "animalName": "Luna",
+    "breed": "Domestic Shorthair",
+    "localFile": "/images/animals/51-luna.jpg",
+    "commonsTitle": "File:White Domestic Shorthair Cat.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a9/White_Domestic_Shorthair_Cat.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:White_Domestic_Shorthair_Cat.jpg",
+    "creator": "Scott from seattle, US",
+    "license": "CC BY-SA 2.0",
+    "credit": "Mousche"
+  },
+  {
+    "animalId": 52,
+    "animalName": "Nala",
+    "breed": "British Shorthair",
+    "localFile": "/images/animals/52-nala.jpg",
+    "commonsTitle": "File:20170604 kot na wystawie w Krakowie 7971.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/14/20170604_kot_na_wystawie_w_Krakowie_7971.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:20170604_kot_na_wystawie_w_Krakowie_7971.jpg",
+    "creator": "Jakub Hałun",
+    "license": "CC BY-SA 4.0",
+    "credit": "Own work"
+  },
+  {
+    "animalId": 53,
+    "animalName": "Cleo",
+    "breed": "Siamese",
+    "localFile": "/images/animals/53-cleo.jpg",
+    "commonsTitle": "File:Siam lilacpoint.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/2/25/Siam_lilacpoint.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Siam_lilacpoint.jpg",
+    "creator": "Karin Langner-Bahmann, upload von Martin Bahmann",
+    "license": "CC BY-SA 3.0",
+    "credit": "Own work"
+  },
+  {
+    "animalId": 54,
+    "animalName": "Mochi",
+    "breed": "Persian",
+    "localFile": "/images/animals/54-mochi.jpg",
+    "commonsTitle": "File:Astrolabe-Persian-18C.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/18/Astrolabe-Persian-18C.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Astrolabe-Persian-18C.jpg",
+    "creator": "Andrew Dunn",
+    "license": "CC BY-SA 2.0",
+    "credit": "Whipple Museum of the History of Science"
+  },
+  {
+    "animalId": 57,
+    "animalName": "Lily",
+    "breed": "Bengal",
+    "localFile": "/images/animals/57-lily.jpg",
+    "commonsTitle": "File:Bengal - 18.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Bengal_-_18.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Bengal_-_18.jpg",
+    "creator": "Another one of my pictures:\n\n\n\nThis photograph was taken by Medium69 (William Crochot) and released under the license stated below. You are free to use it for any purpose as long as you credit the author (William Crochot), the Source (Wikimedia Commons) and the license (CC-BY-SA 4.0) in close relation to the image.\n\n\n\n\n\nPlease do not upload an updated image here without consultation with the Author. The author would like to make corrections only at his own source RAW. This ensures that the changes are preserved.Please if you think that any changes should be required, please inform the author.Otherwise you can upload a new image with a new name. Please use one of the templates derivative or extract.",
+    "license": "CC BY-SA 4.0",
+    "credit": "Own work"
+  },
+  {
+    "animalId": 60,
+    "animalName": "Kiki",
+    "breed": "Russian Blue",
+    "localFile": "/images/animals/60-kiki.jpg",
+    "commonsTitle": "File:Cat Russian Blue 02.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/57/Cat_Russian_Blue_02.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Cat_Russian_Blue_02.jpg",
+    "creator": "Photographer: Kabir Bakie",
+    "license": "CC BY-SA 2.5",
+    "credit": "Own work"
+  },
+  {
+    "animalId": 75,
+    "animalName": "Tofu",
+    "breed": "Thai Cat",
+    "localFile": "/images/animals/75-tofu.jpg",
+    "commonsTitle": "File:Thai cat (1).jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f6/Thai_cat_%281%29.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Thai_cat_(1).jpg",
+    "creator": "Vicvx",
+    "license": "CC BY-SA 4.0",
+    "credit": "Own work"
+  },
+  {
+    "animalId": 76,
+    "animalName": "Mango",
+    "breed": "Domestic Shorthair",
+    "localFile": "/images/animals/76-mango.jpg",
+    "commonsTitle": "File:Tabby-cat-domestic-shorthair-balthazar.jpg",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/46/Tabby-cat-domestic-shorthair-balthazar.jpg",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Tabby-cat-domestic-shorthair-balthazar.jpg",
+    "creator": "Nohat at English Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "credit": "Transferred from en.wikipedia to Commons by Logan using CommonsHelper."
+  },
+  {
+    "animalId": 78,
+    "animalName": "Hazel",
+    "breed": "Siamese",
+    "localFile": "/images/animals/78-hazel.jpg",
+    "commonsTitle": "File:Siamese cat Vaillante.JPG",
+    "originalImageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/16/Siamese_cat_Vaillante.JPG",
+    "commonsPage": "https://commons.wikimedia.org/wiki/File:Siamese_cat_Vaillante.JPG",
+    "creator": "Meekahoo",
+    "license": "CC BY-SA 3.0",
+    "credit": "Own work"
+  }
+]

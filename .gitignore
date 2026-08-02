@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python virtual environment
+.venv/
+
+# VS Code settings
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# AI training data
+ai/data/
+
+# Trained AI models
+*.joblib
+
+# Model evaluation/config (optional)
+ai/pawconnect_model_*.json
