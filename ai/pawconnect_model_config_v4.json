@@ -1,0 +1,41 @@
+{
+  "model_version": "v4",
+  "threshold": 0.45,
+  "labels": [
+    "active",
+    "affectionate",
+    "apartment_friendly",
+    "beginner_owner",
+    "calm",
+    "experienced_owner",
+    "friendly",
+    "good_with_children",
+    "good_with_pets",
+    "house_friendly",
+    "independent",
+    "limited_time",
+    "low_energy",
+    "low_grooming",
+    "low_shedding",
+    "moderate_activity",
+    "playful",
+    "plenty_time",
+    "prefers_cat",
+    "prefers_dog",
+    "protective",
+    "quiet",
+    "vocal",
+    "yard_available"
+  ],
+  "label_count": 24,
+  "training_samples": 8000,
+  "validation_samples": 1000,
+  "test_samples": 1000,
+  "exact_entities_are_not_classification_labels": [
+    "age_years",
+    "breed",
+    "size",
+    "gender",
+    "location"
+  ]
+}
