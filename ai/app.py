@@ -546,282 +546,603 @@ def build_ranking_preferences(
     prediction_result: dict[str, Any],
 ) -> dict[str, Any]:
 
-    labels = prediction_result.get(
-        "labels",
-        [],
-    )
+    labels = prediction_result.get("labels", [])
+    confidence = prediction_result.get("confidence", {})
+    entities = prediction_result.get("entities", {})
+    original_text = str(
+        prediction_result.get("text", "")
+    ).strip().lower()
 
-    confidence = prediction_result.get(
-        "confidence",
-        {},
-    )
+    if not isinstance(labels, list):
+        labels = []
 
-    entities = prediction_result.get(
-        "entities",
-        {},
-    )
+    if not isinstance(confidence, dict):
+        confidence = {}
 
-    if not isinstance(
-        entities,
-        dict,
-    ):
+    if not isinstance(entities, dict):
         entities = {}
 
-    preferences: dict[str, Any] = dict(
-        entities
-    )
+    normalized_labels = {
+        str(label).strip().lower()
+        for label in labels
+    }
 
     readable_labels = [
-        str(label)
-        .strip()
-        .lower()
-        .replace(
-            "_",
-            " ",
-        )
-        for label in labels
+        label.replace("_", " ")
+        for label in normalized_labels
     ]
 
-    preferences["labels"] = readable_labels
-    preferences["predicted_labels"] = readable_labels
-    preferences["temperament_traits"] = readable_labels
+    # Begin with exact entities extracted from the user's text.
+    preferences: dict[str, Any] = {}
 
-    # -------------------------------------------------
-    # Save AI confidence
-    # ranking.py will use these as weights.
-    # -------------------------------------------------
-
+    # Keep raw model output for debugging and research reporting,
+    # but do not automatically use every prediction for ranking.
+    preferences["labels"] = sorted(readable_labels)
+    preferences["predicted_labels"] = sorted(
+        readable_labels
+    )
     preferences["confidence"] = confidence
 
-    # -------------------------------------------------
-    # Pet Type
-    # -------------------------------------------------
+    # =====================================================
+    # DETECT WHAT THE USER ACTUALLY MENTIONED
+    # =====================================================
 
-    if "prefers_dog" in labels:
-        preferences["pet_type"] = "dog"
+    mentions_cat = bool(
+        re.search(
+            r"\b(cat|kitten|feline)\b",
+            original_text,
+        )
+    )
 
-    elif "prefers_cat" in labels:
+    mentions_dog = bool(
+        re.search(
+            r"\b(dog|puppy|canine)\b",
+            original_text,
+        )
+    )
+
+    mentions_apartment = bool(
+        re.search(
+            r"\b(apartment|condo|flat)\b",
+            original_text,
+        )
+    )
+
+    mentions_house = bool(
+        re.search(
+            r"\b(house|home with a yard|yard|garden)\b",
+            original_text,
+        )
+    )
+
+    mentions_children = bool(
+        re.search(
+            r"\b(child|children|kid|kids|baby|babies)\b",
+            original_text,
+        )
+    )
+
+    mentions_other_pets = bool(
+        re.search(
+            (
+                r"\b(other pets?|another pet|existing pets?|"
+                r"pets? at home|dog at home|dogs at home|"
+                r"cat at home|cats at home)\b"
+            ),
+            original_text,
+        )
+    )
+
+    mentions_activity = bool(
+        re.search(
+            (
+                r"\b(active|energetic|athletic|exercise|"
+                r"high energy|high-energy|moderate activity|"
+                r"low energy|low-energy|relaxed lifestyle)\b"
+            ),
+            original_text,
+        )
+    )
+
+    mentions_experience = bool(
+        re.search(
+            (
+                r"\b(first pet|first-time owner|first time owner|"
+                r"beginner|no experience|never owned|"
+                r"experienced owner|owned pets before|"
+                r"many years of experience)\b"
+            ),
+            original_text,
+        )
+    )
+
+    mentions_schedule = bool(
+        re.search(
+            (
+                r"\b(work from home|home all day|"
+                r"home most of the day|busy schedule|"
+                r"long hours|work long hours|9\s*to\s*5|"
+                r"away during the day|hours? per day|"
+                r"hours? daily|available all day)\b"
+            ),
+            original_text,
+        )
+    )
+
+    temperament_patterns = {
+        "calm": r"\b(calm|relaxed|easygoing|laid-back)\b",
+        "quiet": r"\b(quiet|not vocal|silent)\b",
+        "friendly": r"\b(friendly|social|outgoing)\b",
+        "playful": r"\b(playful|likes to play)\b",
+        "gentle": r"\b(gentle|patient|soft-tempered)\b",
+        "independent": (
+            r"\b(independent|self-sufficient|"
+            r"can stay alone|comfortable alone)\b"
+        ),
+        "protective": r"\b(protective|guarding|guard dog)\b",
+        "affectionate": r"\b(affectionate|loving|cuddly)\b",
+    }
+
+    explicitly_requested_traits = [
+        trait
+        for trait, pattern in temperament_patterns.items()
+        if re.search(pattern, original_text)
+    ]
+
+    # =====================================================
+    # EXACT ENTITY PREFERENCES
+    # These have priority over ML predictions.
+    # =====================================================
+
+    entity_pet_type = str(
+        entities.get("pet_type", "")
+    ).strip().lower()
+
+    if entity_pet_type in {"cat", "dog"}:
+        preferences["pet_type"] = entity_pet_type
+
+    elif mentions_cat and not mentions_dog:
         preferences["pet_type"] = "cat"
 
-    # -------------------------------------------------
-    # Home Type
-    # -------------------------------------------------
+    elif mentions_dog and not mentions_cat:
+        preferences["pet_type"] = "dog"
 
-    if "apartment_friendly" in labels:
+    elif mentions_cat or mentions_dog:
+        # Use the model only when the text refers to pets
+        # but extraction did not resolve the type.
+        if "prefers_cat" in normalized_labels:
+            preferences["pet_type"] = "cat"
 
-        preferences[
-            "apartment_friendly"
-        ] = True
+        elif "prefers_dog" in normalized_labels:
+            preferences["pet_type"] = "dog"
 
-        preferences.setdefault(
-            "home_type",
-            "apartment",
-        )
+    breed = entities.get("breed")
 
-    elif "house_friendly" in labels:
+    if breed:
+        preferences["breed"] = str(breed).strip()
 
-        preferences.setdefault(
-            "home_type",
-            "house",
-        )
+    gender = entities.get("gender")
 
-    # -------------------------------------------------
-    # Child Friendly
-    # -------------------------------------------------
+    if gender:
+        preferences["gender"] = str(gender).strip().lower()
 
-    if (
-        "child_friendly" in labels
-        or "good_with_children" in labels
-    ):
+    location = entities.get("location")
 
-        preferences[
-            "child_friendly"
-        ] = True
+    if location:
+        preferences["location"] = str(location).strip()
 
-    # -------------------------------------------------
-    # Pet Friendly
-    # -------------------------------------------------
+    size = entities.get("size")
 
-    if (
-        "pet_friendly" in labels
-        or "good_with_other_pets" in labels
-    ):
-
-        preferences[
-            "pet_friendly"
-        ] = True
-
-    # -------------------------------------------------
-    # Energy Level
-    # -------------------------------------------------
-
-    if "active" in labels:
-
-        preferences[
-            "energy_level"
-        ] = "high"
-
-    elif (
-        "moderate_activity"
-        in labels
-    ):
-
-        preferences[
-            "energy_level"
-        ] = "medium"
-
-    elif "low_energy" in labels:
-
-        preferences[
-            "energy_level"
-        ] = "low"
-
-    # -------------------------------------------------
-    # Experience
-    # -------------------------------------------------
-
-    if "beginner_owner" in labels:
-
-        preferences[
-            "experience_level"
-        ] = "beginner"
-
-    elif (
-        "experienced_owner"
-        in labels
-    ):
-
-        preferences[
-            "experience_level"
-        ] = "experienced"
-
-    # -------------------------------------------------
-    # Available Time
-    # -------------------------------------------------
-
-    if "limited_time" in labels:
-
-        preferences[
-            "available_attention_hours"
-        ] = 2
-
-    elif "plenty_time" in labels:
-
-        preferences[
-            "available_attention_hours"
-        ] = 8
-
-    # -------------------------------------------------
-    # Exact Entity Overrides
-    # -------------------------------------------------
-
-    if entities.get("pet_type"):
-        preferences["pet_type"] = entities["pet_type"]
-
-    if entities.get("breed"):
-        preferences["breed"] = entities["breed"]
-
-    if entities.get("gender"):
-        preferences["gender"] = entities["gender"]
-
-    if entities.get("location"):
-        preferences["location"] = entities["location"]
-
-    if entities.get("size"):
-        preferences["size"] = entities["size"]
+    if size:
+        preferences["size"] = str(size).strip().lower()
 
     if entities.get("age_years") is not None:
         preferences["age_years"] = entities["age_years"]
 
-    # -------------------------------------------------
-    # AI Confidence Weights
-    # ranking.py uses these values directly.
-    # -------------------------------------------------
+    if entities.get("age_months") is not None:
+        preferences["age_months"] = entities["age_months"]
+
+    # =====================================================
+    # HOME TYPE
+    # =====================================================
+
+    if mentions_apartment:
+        preferences["home_type"] = "apartment"
+        preferences["apartment_friendly"] = True
+
+    elif mentions_house:
+        preferences["home_type"] = "house"
+
+    # =====================================================
+    # CHILD COMPATIBILITY
+    # Only activate this category when children are mentioned.
+    # =====================================================
+
+    if mentions_children:
+        negative_children = bool(
+            re.search(
+                (
+                    r"\b(no children|no kids|without children|"
+                    r"without kids|do not have children|"
+                    r"don't have children|do not have kids|"
+                    r"don't have kids)\b"
+                ),
+                original_text,
+            )
+        )
+
+        preferences["has_children"] = not negative_children
+
+        if not negative_children:
+            preferences["child_friendly"] = True
+
+    # =====================================================
+    # OTHER-PET COMPATIBILITY
+    # =====================================================
+
+    if mentions_other_pets:
+        negative_other_pets = bool(
+            re.search(
+                (
+                    r"\b(no other pets?|without other pets?|"
+                    r"do not have other pets?|"
+                    r"don't have other pets?)\b"
+                ),
+                original_text,
+            )
+        )
+
+        preferences["has_other_pets"] = (
+            not negative_other_pets
+        )
+
+        if not negative_other_pets:
+            preferences["pet_friendly"] = True
+
+    # =====================================================
+    # ENERGY LEVEL
+    # Apply an inferred value only when activity was mentioned.
+    # =====================================================
+
+    if mentions_activity:
+
+        if re.search(
+            (
+                r"\b(high energy|high-energy|very active|"
+                r"energetic|athletic)\b"
+            ),
+            original_text,
+        ):
+            preferences["energy_level"] = "high"
+
+        elif re.search(
+            (
+                r"\b(low energy|low-energy|relaxed lifestyle|"
+                r"not very active)\b"
+            ),
+            original_text,
+        ):
+            preferences["energy_level"] = "low"
+
+        elif "active" in normalized_labels:
+            preferences["energy_level"] = "high"
+
+        elif "low_energy" in normalized_labels:
+            preferences["energy_level"] = "low"
+
+        elif "moderate_activity" in normalized_labels:
+            preferences["energy_level"] = "medium"
+
+    # =====================================================
+    # EXPERIENCE
+    # =====================================================
+
+    if mentions_experience:
+
+        beginner_text = bool(
+            re.search(
+                (
+                    r"\b(first pet|first-time owner|"
+                    r"first time owner|beginner|"
+                    r"no experience|never owned)\b"
+                ),
+                original_text,
+            )
+        )
+
+        experienced_text = bool(
+            re.search(
+                (
+                    r"\b(experienced owner|owned pets before|"
+                    r"many years of experience)\b"
+                ),
+                original_text,
+            )
+        )
+
+        if beginner_text:
+            preferences["experience_level"] = "beginner"
+
+        elif experienced_text:
+            preferences["experience_level"] = (
+                "experienced"
+            )
+
+        elif "beginner_owner" in normalized_labels:
+            preferences["experience_level"] = "beginner"
+
+        elif "experienced_owner" in normalized_labels:
+            preferences["experience_level"] = (
+                "experienced"
+            )
+
+    # =====================================================
+    # AVAILABLE TIME
+    # =====================================================
+
+    if mentions_schedule:
+
+        explicit_hours_match = re.search(
+            (
+                r"\b(\d+(?:\.\d+)?)\s*"
+                r"hours?\s*(?:per day|daily|a day)?\b"
+            ),
+            original_text,
+        )
+
+        if explicit_hours_match:
+            preferences[
+                "available_attention_hours"
+            ] = float(
+                explicit_hours_match.group(1)
+            )
+
+        elif "limited_time" in normalized_labels:
+            preferences[
+                "available_attention_hours"
+            ] = 2
+
+        elif "plenty_time" in normalized_labels:
+            preferences[
+                "available_attention_hours"
+            ] = 8
+
+    # =====================================================
+    # TEMPERAMENT
+    # Use only traits directly stated by the user.
+    # =====================================================
+
+    preferences["temperament_traits"] = (
+        explicitly_requested_traits
+    )
+
+    # =====================================================
+    # CATEGORY-SPECIFIC CONFIDENCE WEIGHTS
+    # A weight becomes active only when the category was
+    # explicitly mentioned or extracted.
+    # =====================================================
 
     preferences["weights"] = {
-
-        "pet_type":
+        "pet_type": (
             max(
-                confidence.get(
-                    "prefers_cat",
-                    0,
+                float(
+                    confidence.get(
+                        "prefers_cat",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "prefers_dog",
-                    0,
+                float(
+                    confidence.get(
+                        "prefers_dog",
+                        0,
+                    )
                 ),
-            ),
+            )
+            if preferences.get("pet_type")
+            else 0
+        ),
 
-        "energy":
+        "breed": (
+            1.0
+            if preferences.get("breed")
+            else 0
+        ),
+
+        "location": (
+            1.0
+            if preferences.get("location")
+            else 0
+        ),
+
+        "age": (
+            1.0
+            if preferences.get("age_years")
+            is not None
+            else 0
+        ),
+
+        "size": (
+            1.0
+            if preferences.get("size")
+            else 0
+        ),
+
+        "gender": (
+            1.0
+            if preferences.get("gender")
+            else 0
+        ),
+
+        "apartment": (
+            float(
+                confidence.get(
+                    "apartment_friendly",
+                    1.0,
+                )
+            )
+            if mentions_apartment
+            else 0
+        ),
+
+        "child": (
             max(
-                confidence.get(
-                    "active",
-                    0,
+                float(
+                    confidence.get(
+                        "child_friendly",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "moderate_activity",
-                    0,
+                float(
+                    confidence.get(
+                        "good_with_children",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "low_energy",
-                    0,
-                ),
-            ),
+                0.8,
+            )
+            if (
+                mentions_children
+                and preferences.get(
+                    "child_friendly"
+                )
+            )
+            else 0
+        ),
 
-        "apartment":
-            confidence.get(
-                "apartment_friendly",
-                0,
-            ),
-
-        "child":
+        "pet": (
             max(
-                confidence.get(
-                    "child_friendly",
-                    0,
+                float(
+                    confidence.get(
+                        "pet_friendly",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "good_with_children",
-                    0,
+                float(
+                    confidence.get(
+                        "good_with_other_pets",
+                        0,
+                    )
                 ),
-            ),
+                0.8,
+            )
+            if (
+                mentions_other_pets
+                and preferences.get(
+                    "pet_friendly"
+                )
+            )
+            else 0
+        ),
 
-        "pet":
+        "energy": (
             max(
-                confidence.get(
-                    "pet_friendly",
-                    0,
+                float(
+                    confidence.get(
+                        "active",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "good_with_other_pets",
-                    0,
+                float(
+                    confidence.get(
+                        "moderate_activity",
+                        0,
+                    )
                 ),
-            ),
+                float(
+                    confidence.get(
+                        "low_energy",
+                        0,
+                    )
+                ),
+            )
+            if mentions_activity
+            else 0
+        ),
 
-        "experience":
+        "experience": (
             max(
-                confidence.get(
-                    "beginner_owner",
-                    0,
+                float(
+                    confidence.get(
+                        "beginner_owner",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "experienced_owner",
-                    0,
+                float(
+                    confidence.get(
+                        "experienced_owner",
+                        0,
+                    )
                 ),
-            ),
+            )
+            if mentions_experience
+            else 0
+        ),
 
-        "time":
+        "time": (
             max(
-                confidence.get(
-                    "limited_time",
-                    0,
+                float(
+                    confidence.get(
+                        "limited_time",
+                        0,
+                    )
                 ),
-                confidence.get(
-                    "plenty_time",
-                    0,
+                float(
+                    confidence.get(
+                        "plenty_time",
+                        0,
+                    )
                 ),
-            ),
+            )
+            if mentions_schedule
+            else 0
+        ),
+
+        "temperament": (
+            1.0
+            if explicitly_requested_traits
+            else 0
+        ),
     }
+
+    # Useful for debugging and proving that the system
+    # distinguishes explicit input from inferred predictions.
+    preferences["explicit_categories"] = {
+        "pet_type": bool(
+            preferences.get("pet_type")
+        ),
+        "breed": bool(
+            preferences.get("breed")
+        ),
+        "age": (
+            preferences.get("age_years")
+            is not None
+        ),
+        "location": bool(
+            preferences.get("location")
+        ),
+        "size": bool(
+            preferences.get("size")
+        ),
+        "gender": bool(
+            preferences.get("gender")
+        ),
+        "home": (
+            mentions_apartment
+            or mentions_house
+        ),
+        "children": mentions_children,
+        "other_pets": mentions_other_pets,
+        "activity": mentions_activity,
+        "experience": mentions_experience,
+        "schedule": mentions_schedule,
+        "temperament": bool(
+            explicitly_requested_traits
+        ),
+    }
+
+    preferences[
+        "preference_builder_version"
+    ] = "explicit-aware-v3"
 
     return preferences
 
