@@ -1,0 +1,26 @@
+scenario_id,category,required,preferred,n_animals,animal_ids,expected_mode,expected_top1_id,allowed_pet_type
+R01,exact_match,"{""pet_type"": ""dog""}","{""energy_level"": ""medium"", ""temperament"": [""friendly""]}",3,1 2 3,exact,1,dog
+R02,exact_match,"{""pet_type"": ""cat"", ""gender"": ""female""}","{""temperament"": [""calm""]}",2,1 2,exact,1,cat
+R03,exact_match,"{""pet_type"": ""dog"", ""size"": ""small""}","{""apartment_friendly"": true}",2,1 2,exact,1,dog
+R04,exact_match,"{""pet_type"": ""cat"", ""location"": ""Bangkok""}","{""pet_friendly"": true}",2,1 2,exact,1,cat
+R05,exact_match,"{""pet_type"": ""dog"", ""breed"": ""Labrador Retriever""}","{""child_friendly"": true}",2,1 2,exact,1,dog
+R06,preference_ranking,"{""pet_type"": ""dog""}","{""energy_level"": ""low""}",2,1 2,exact,1,dog
+R07,preference_ranking,"{""pet_type"": ""cat""}","{""temperament"": [""friendly"", ""playful""]}",2,1 2,exact,1,cat
+R08,preference_ranking,"{""pet_type"": ""dog""}","{""child_friendly"": true, ""pet_friendly"": true}",2,1 2,exact,1,dog
+R09,preference_ranking,"{""pet_type"": ""cat""}","{""apartment_friendly"": true, ""energy_level"": ""low""}",2,1 2,exact,1,cat
+R10,preference_ranking,"{""pet_type"": ""dog""}","{""experience_level"": ""beginner""}",2,1 2,exact,1,dog
+R11,hard_constraint,"{""pet_type"": ""dog""}","{""temperament"": [""friendly""]}",2,1 2,exact,2,dog
+R12,hard_constraint,"{""pet_type"": ""cat""}","{""energy_level"": ""medium""}",2,1 2,exact,2,cat
+R13,hard_constraint,"{""pet_type"": ""dog"", ""gender"": ""female""}",{},3,1 2 3,exact,2,dog
+R14,hard_constraint,"{""pet_type"": ""cat"", ""location"": ""Bangkok""}",{},2,1 2,exact,2,cat
+R15,hard_constraint,"{""pet_type"": ""dog""}",{},2,1 2,exact,2,dog
+R16,fallback,"{""pet_type"": ""dog"", ""breed"": ""Golden Retriever""}","{""temperament"": [""friendly""]}",2,1 2,alternative,1,dog
+R17,fallback,"{""pet_type"": ""cat"", ""gender"": ""female"", ""location"": ""Bangkok""}",{},2,1 2,alternative,1,cat
+R18,fallback,"{""pet_type"": ""dog"", ""size"": ""small"", ""location"": ""Bangkok""}",{},2,1 2,alternative,1,dog
+R19,fallback,"{""pet_type"": ""cat"", ""breed"": ""Sphynx"", ""gender"": ""male""}",{},2,1 2,alternative,1,cat
+R20,no_match,"{""pet_type"": ""dog""}",{},2,1 2,no_match,,dog
+R21,no_match,"{""pet_type"": ""cat""}",{},1,1,no_match,,cat
+R22,no_match,"{""pet_type"": ""dog""}",{},1,1,no_match,,dog
+R23,edge,"{""pet_type"": ""dog""}","{""energy_level"": ""medium""}",2,1 2,exact,1,dog
+R24,edge,"{""pet_type"": ""cat""}","{""temperament"": [""friendly""]}",2,1 2,exact,1,cat
+R25,edge,"{""pet_type"": ""dog"", ""breed"": ""Poodle""}","{""apartment_friendly"": true}",2,1 2,alternative,1,dog

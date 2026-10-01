@@ -1,798 +1,506 @@
 from __future__ import annotations
 
 from typing import Any
-import math
 
-# ==========================================================
-# NORMALIZATION
-# ==========================================================
-
-TEMPERAMENT_GROUPS = {
-    "calm": [
-        "calm",
-        "quiet",
-        "gentle",
-        "relaxed",
-        "easygoing",
-        "laid back",
-        "laid-back",
-        "docile",
-        "sweet",
-    ],
-    "active": [
-        "active",
-        "energetic",
-        "playful",
-        "athletic",
-        "high energy",
-        "high-energy",
-    ],
-    "friendly": [
-        "friendly",
-        "social",
-        "outgoing",
-        "loving",
-        "affectionate",
-        "people friendly",
-    ],
-    "independent": [
-        "independent",
-        "self sufficient",
-        "self-sufficient",
-        "alone",
-    ],
-    "protective": [
-        "protective",
-        "loyal",
-        "guard",
-    ],
-}
+from explanation_engine import (
+    build_no_match_response,
+    build_success_response,
+)
+from fallback_engine import resolve_fallback
+from filter_engine import (
+    filter_animals_by_required_constraints,
+)
+from scoring_engine import rank_candidates
 
 
-# ==========================================================
-# HELPERS
-# ==========================================================
+# =========================================================
+# PREFERENCE PROFILE NORMALIZATION
+# =========================================================
 
-def normalize_text(value: Any) -> str:
-    if value is None:
-        return ""
-    return str(value).strip().lower()
+def _coerce_preference_profile(
+    preferences: dict[str, Any] | None,
+) -> dict[str, Any]:
+    preferences = preferences or {}
 
+    if (
+        isinstance(preferences.get("required"), dict)
+        and isinstance(preferences.get("preferred"), dict)
+    ):
+        return {
+            "required": dict(
+                preferences["required"]
+            ),
+            "preferred": dict(
+                preferences["preferred"]
+            ),
+            "metadata": dict(
+                preferences.get(
+                    "metadata",
+                    {},
+                )
+            ),
+        }
 
-def normalize_boolean(value: Any) -> bool:
-    if isinstance(value, bool):
-        return value
+    required: dict[str, Any] = {}
+    preferred: dict[str, Any] = {}
 
-    if isinstance(value, int):
-        return value == 1
+    required_fields = (
+        "pet_type",
+        "breed",
+        "gender",
+        "size",
+        "location",
+        "age_years",
+        "age_months",
+    )
 
-    return normalize_text(value) in {
-        "1",
-        "true",
-        "yes",
-        "y",
+    for field in required_fields:
+        value = preferences.get(field)
+
+        if (
+            value is not None
+            and value != ""
+        ):
+            required[field] = value
+
+    preferred_fields = (
+        "energy_level",
+        "apartment_friendly",
+        "child_friendly",
+        "pet_friendly",
+        "experience_level",
+        "available_attention_hours",
+    )
+
+    for field in preferred_fields:
+        value = preferences.get(field)
+
+        if (
+            value is not None
+            and value != ""
+        ):
+            preferred[field] = value
+
+    temperament = preferences.get(
+        "temperament_traits"
+    )
+
+    if temperament:
+        preferred[
+            "temperament"
+        ] = temperament
+
+    metadata = preferences.get(
+        "metadata",
+        {},
+    )
+
+    if not isinstance(
+        metadata,
+        dict,
+    ):
+        metadata = {}
+
+    return {
+        "required": required,
+        "preferred": preferred,
+        "metadata": {
+            **metadata,
+
+            "model": metadata.get(
+                "model",
+                preferences.get(
+                    "system_type",
+                    "ml",
+                ),
+            ),
+
+            "schema_version": metadata.get(
+                "schema_version",
+                "1.0",
+            ),
+
+            "legacy_profile_converted": True,
+        },
     }
 
 
-def normalize_list(value: Any) -> list[str]:
+# =========================================================
+# ATTACH EXPLANATION CONTEXT
+# =========================================================
 
-    if value is None:
-        return []
+def _attach_explanation_context(
+    recommendations: list[dict[str, Any]],
+    required: dict[str, Any],
+    preferred: dict[str, Any],
+    mode: str,
+) -> list[dict[str, Any]]:
+    """
+    Attach the user's actual constraints to each
+    recommendation before explanation generation.
+    """
 
-    if isinstance(value, (list, tuple, set)):
-        return [
-            normalize_text(v)
-            for v in value
-            if normalize_text(v)
-        ]
+    for recommendation in recommendations:
 
-    text = normalize_text(value)
+        if mode == "exact":
+            recommendation[
+                "required_constraints"
+            ] = dict(required)
 
-    if not text:
-        return []
+        else:
+            recommendation.setdefault(
+                "required_constraints",
+                {},
+            )
 
-    return [
-        item.strip()
-        for item in text.split(",")
-        if item.strip()
-    ]
+        recommendation[
+            "preferred_constraints"
+        ] = dict(preferred)
 
+        recommendation[
+            "recommendation_mode"
+        ] = mode
 
-def safe_float(
-    value: Any,
-    default: float = 0.0,
-) -> float:
-
-    try:
-        return float(value)
-
-    except Exception:
-        return default
-
-
-def extract_age_in_years(
-    value: Any,
-) -> float | None:
-
-    if value is None:
-        return None
-
-    if isinstance(value, (int, float)):
-        return float(value)
-
-    text = normalize_text(value)
-
-    digits = ""
-
-    for ch in text:
-
-        if ch.isdigit() or ch == ".":
-            digits += ch
-
-        elif digits:
-            break
-
-    if not digits:
-        return None
-
-    age = safe_float(digits)
-
-    if "week" in text:
-        return age / 52
-
-    if "month" in text:
-        return age / 12
-
-    return age
+    return recommendations
 
 
-def get_preference(
-    preferences: dict[str, Any],
-    *keys: str,
-    default=None,
-):
+# =========================================================
+# WEBSITE COMPATIBILITY FIELDS
+# =========================================================
 
-    for key in keys:
+def _apply_api_compatibility_fields(
+    recommendations: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
 
-        if key in preferences:
+    for animal in recommendations:
 
-            value = preferences.get(key)
+        score = float(
+            animal.get(
+                "compatibility_score",
+                0,
+            )
+        )
 
-            if value is not None:
-                return value
+        animal[
+            "match_score"
+        ] = score
 
-    return default
+        animal[
+            "matchPercentage"
+        ] = score
+
+        matched = list(
+            animal.get(
+                "matched_preferences",
+                [],
+            )
+        )
+
+        missing = list(
+            animal.get(
+                "missing_preferences",
+                [],
+            )
+        )
+
+        failed_required = list(
+            animal.get(
+                "failed_required_messages",
+                [],
+            )
+        )
+
+        animal[
+            "reasons"
+        ] = matched
+
+        animal[
+            "matchReasons"
+        ] = matched
+
+        animal[
+            "concerns"
+        ] = (
+            failed_required
+            + missing
+        )
+
+    return recommendations
 
 
-# ==========================================================
-# TEMPERAMENT
-# ==========================================================
+# =========================================================
+# EMPTY RESULT
+# =========================================================
 
-def has_trait(
-    text: str,
-    trait: str,
-) -> bool:
+def _build_empty_ranking_result(
+    *,
+    message: str,
+    total_scored: int,
+    mode: str,
+    preference_profile: dict[str, Any],
+) -> dict[str, Any]:
 
-    text = normalize_text(text)
-
-    synonyms = TEMPERAMENT_GROUPS.get(
-        trait,
-        [trait],
+    response = build_no_match_response(
+        message
     )
 
-    return any(
-        word in text
-        for word in synonyms
-    )
+    return {
+        **response,
 
+        "best_match": None,
 
-def trait_score(
-    animal_text: str,
-    requested_traits: list[str],
-):
+        "other_recommendations": [],
 
-    score = 0
-    matched = []
+        "recommendations": [],
 
-    for trait in requested_traits:
-
-        if has_trait(animal_text, trait):
-
-            score += 1
-            matched.append(trait)
-
-    return score, matched
-
-
-# ==========================================================
-# SCORE HELPERS
-# ==========================================================
-
-def add_reason(
-    reasons: list[str],
-    text: str,
-):
-
-    if text not in reasons:
-        reasons.append(text)
-
-
-def add_concern(
-    concerns: list[str],
-    text: str,
-):
-
-    if text not in concerns:
-        concerns.append(text)
-
-
-def clamp(
-    value: float,
-    minimum: float = 0,
-    maximum: float = 100,
-):
-
-    return max(
-        minimum,
-        min(
-            maximum,
-            value,
+        "total_scored": (
+            total_scored
         ),
-    )
-# ==========================================================
-# MAIN AI SCORING ENGINE
-# ==========================================================
 
-def calculate_animal_match(
-    animal: dict[str, Any],
-    preferences: dict[str, Any],
-):
+        "mode": mode,
 
-    score = 50.0
-
-    reasons = []
-    concerns = []
-
-    # -----------------------------
-    # Animal
-    # -----------------------------
-
-    animal_type = normalize_text(animal.get("type"))
-    animal_breed = normalize_text(animal.get("breed"))
-    animal_gender = normalize_text(animal.get("gender"))
-    animal_size = normalize_text(animal.get("size"))
-    animal_location = normalize_text(animal.get("location"))
-    animal_energy = normalize_text(animal.get("energy_level"))
-    animal_temperament = normalize_text(animal.get("temperament"))
-    animal_description = normalize_text(animal.get("description"))
-    animal_experience = normalize_text(animal.get("experience_required"))
-
-    apartment = normalize_boolean(
-        animal.get("apartment_friendly")
-    )
-
-    child = normalize_boolean(
-        animal.get("child_friendly")
-    )
-
-    pet = normalize_boolean(
-        animal.get("pet_friendly")
-    )
-
-    attention = safe_float(
-        animal.get("daily_attention_hours"),
-        0,
-    )
-
-    animal_age = extract_age_in_years(
-        animal.get("age")
-    )
-
-    combined_text = " ".join([
-        animal_temperament,
-        animal_description,
-        animal_energy,
-    ])
-
-    # -----------------------------
-    # Preferences
-    # -----------------------------
-
-    preferred_type = normalize_text(
-        get_preference(
-            preferences,
-            "pet_type",
-            "preferredType",
-        )
-    )
-
-    preferred_breed = normalize_text(
-        get_preference(
-            preferences,
-            "breed",
-        )
-    )
-
-    preferred_gender = normalize_text(
-        get_preference(
-            preferences,
-            "gender",
-        )
-    )
-
-    preferred_size = normalize_text(
-        get_preference(
-            preferences,
-            "size",
-        )
-    )
-
-    preferred_location = normalize_text(
-        get_preference(
-            preferences,
-            "location",
-        )
-    )
-
-    preferred_energy = normalize_text(
-        get_preference(
-            preferences,
-            "energy_level",
-        )
-    )
-
-    preferred_traits = normalize_list(
-        get_preference(
-            preferences,
-            "temperament_traits",
-            default=[],
-        )
-    )
-
-    experience_level = normalize_text(
-        get_preference(
-            preferences,
-            "experience_level",
-        )
-    )
-
-    available_hours = safe_float(
-        get_preference(
-            preferences,
-            "available_attention_hours",
-            default=-1,
+        "preference_profile": (
+            preference_profile
         ),
-        -1,
-    )
+    }
 
-    # =====================================================
-    # PET TYPE
-    # =====================================================
 
-    if preferred_type:
-
-        if animal_type == preferred_type:
-
-            score += 30
-
-            add_reason(
-                reasons,
-                f"Preferred {animal_type}.",
-            )
-
-        else:
-
-            score -= 30
-
-            add_concern(
-                concerns,
-                "Different pet type.",
-            )
-
-    # =====================================================
-    # BREED
-    # =====================================================
-
-    if preferred_breed:
-
-        if preferred_breed == animal_breed:
-
-            score += 25
-
-            add_reason(
-                reasons,
-                f"Exact breed match ({animal.get('breed')})."
-            )
-
-        elif preferred_breed in animal_breed:
-
-            score += 18
-
-            add_reason(
-                reasons,
-                "Very similar breed."
-            )
-
-        else:
-
-            score -= 15
-
-            add_concern(
-                concerns,
-                "Breed differs."
-            )
-
-    # =====================================================
-    # GENDER
-    # =====================================================
-
-    if preferred_gender:
-
-        if preferred_gender == animal_gender:
-
-            score += 8
-
-            add_reason(
-                reasons,
-                "Preferred gender matched."
-            )
-
-        else:
-
-            score -= 5
-
-            add_concern(
-                concerns,
-                "Gender differs."
-            )
-
-    # =====================================================
-    # SIZE
-    # =====================================================
-
-    if preferred_size:
-
-        if preferred_size == animal_size:
-
-            score += 8
-
-            add_reason(
-                reasons,
-                "Preferred size."
-            )
-
-        else:
-
-            score -= 4
-
-    # =====================================================
-    # LOCATION
-    # =====================================================
-
-    if preferred_location:
-
-        if preferred_location in animal_location:
-
-            score += 5
-
-            add_reason(
-                reasons,
-                "Near preferred location."
-            )
-
-    # =====================================================
-    # APARTMENT
-    # =====================================================
-
-    if normalize_boolean(
-        preferences.get(
-            "apartment_friendly"
-        )
-    ):
-
-        if apartment:
-
-            score += 10
-
-            add_reason(
-                reasons,
-                "Apartment friendly."
-            )
-
-        else:
-
-            score -= 8
-
-            add_concern(
-                concerns,
-                "Not ideal for apartments."
-            )
-
-    # =====================================================
-    # ENERGY
-    # =====================================================
-
-    if preferred_energy:
-
-        if preferred_energy in animal_energy:
-
-            score += 10
-
-            add_reason(
-                reasons,
-                "Energy level matches."
-            )
-
-        elif has_trait(
-            combined_text,
-            preferred_energy,
-        ):
-
-            score += 8
-
-            add_reason(
-                reasons,
-                "Lifestyle matches."
-            )
-
-        else:
-
-            score -= 5
-
-            add_concern(
-                concerns,
-                "Energy mismatch."
-            )
-
-    # =====================================================
-    # TEMPERAMENT
-    # =====================================================
-
-    trait_matches, matched = trait_score(
-        combined_text,
-        preferred_traits,
-    )
-
-    if preferred_traits:
-
-        score += trait_matches * 4
-
-        for item in matched[:3]:
-
-            add_reason(
-                reasons,
-                item.capitalize() + " temperament."
-            )
-
-    # =====================================================
-    # CHILD
-    # =====================================================
-
-    if preferences.get(
-        "child_friendly"
-    ):
-
-        if child:
-
-            score += 8
-
-            add_reason(
-                reasons,
-                "Good with children."
-            )
-
-    # =====================================================
-    # PETS
-    # =====================================================
-
-    if preferences.get(
-        "pet_friendly"
-    ):
-
-        if pet:
-
-            score += 8
-
-            add_reason(
-                reasons,
-                "Good with other pets."
-            )
-
-    # =====================================================
-    # EXPERIENCE
-    # =====================================================
-
-    if experience_level:
-
-        beginner = (
-            "beginner"
-            in experience_level
-        )
-
-        requires_experience = (
-            "experienced"
-            in animal_experience
-        )
-
-        if beginner:
-
-            if requires_experience:
-
-                score -= 8
-
-                add_concern(
-                    concerns,
-                    "Better for experienced owners."
-                )
-
-            else:
-
-                score += 5
-
-                add_reason(
-                    reasons,
-                    "Beginner friendly."
-                )
-
-    # =====================================================
-    # ATTENTION
-    # =====================================================
-
-    if available_hours >= 0:
-
-        if (
-            attention == 0
-            or available_hours >= attention
-        ):
-
-            score += 5
-
-            add_reason(
-                reasons,
-                "Fits your schedule."
-            )
-
-        else:
-
-            score -= 5
-
-            add_concern(
-                concerns,
-                f"Needs {attention:g} hours daily."
-            )
-
-    # =====================================================
-    # AGE
-    # =====================================================
-
-    preferred_age = preferences.get(
-        "age_years"
-    )
-
-    if (
-        preferred_age is not None
-        and animal_age is not None
-    ):
-
-        if abs(
-            animal_age -
-            safe_float(preferred_age)
-        ) <= 1:
-
-            score += 3
-
-            add_reason(
-                reasons,
-                "Preferred age."
-            )
-
-    score = round(clamp(score))
-
-    result = dict(animal)
-
-    result["match_score"] = score
-    result["matchPercentage"] = score
-    result["compatibility_score"] = score
-
-    result["reasons"] = reasons[:7]
-    result["matchReasons"] = reasons[:7]
-    result["concerns"] = concerns[:5]
-
-    return result
-
-# ==========================================================
-# FINAL RANKING
-# ==========================================================
+# =========================================================
+# MAIN RANKING ENGINE
+# =========================================================
 
 def rank_animals(
     animals: list[dict[str, Any]],
     preferences: dict[str, Any],
     recommendation_limit: int = 4,
-):
+) -> dict[str, Any]:
+    """
+    PawConnect Ranking Engine v2.3
 
-    scored_animals = []
+    Pipeline:
+      1. Normalize preference profile.
+      2. Read preferred confidence.
+      3. Fall back to raw ML confidence when needed.
+      4. Filter required constraints.
+      5. Resolve exact / alternative / no-match mode.
+      6. Rank candidates.
+      7. Apply confidence-aware preferred scoring.
+      8. Attach explanation context.
+      9. Generate explanations.
+      10. Preserve website API compatibility.
+    """
 
-    for animal in animals:
+    # -----------------------------------------------------
+    # Validate inputs
+    # -----------------------------------------------------
 
-        scored = calculate_animal_match(
-            animal,
-            preferences,
+    if not isinstance(
+        animals,
+        list,
+    ):
+        raise TypeError(
+            "animals must be a list."
         )
 
-        scored_animals.append(scored)
-
-    # =====================================================
-    # SMART TIE BREAKER
-    # =====================================================
-
-    def ranking_key(animal):
-
-        reasons = animal.get(
-            "matchReasons",
-            [],
+    if not isinstance(
+        preferences,
+        dict,
+    ):
+        raise TypeError(
+            "preferences must be a dictionary."
         )
-
-        return (
-
-            animal.get(
-                "match_score",
-                0,
-            ),
-
-            len(reasons),
-
-            normalize_boolean(
-                animal.get(
-                    "apartment_friendly"
-                )
-            ),
-
-            normalize_boolean(
-                animal.get(
-                    "pet_friendly"
-                )
-            ),
-
-            normalize_boolean(
-                animal.get(
-                    "child_friendly"
-                )
-            ),
-
-            -safe_float(
-                animal.get(
-                    "daily_attention_hours"
-                ),
-                999,
-            ),
-
-            normalize_text(
-                animal.get(
-                    "breed"
-                )
-            ),
-
-            -int(
-                animal.get(
-                    "id",
-                    0,
-                )
-            ),
-        )
-
-    scored_animals.sort(
-        key=ranking_key,
-        reverse=True,
-    )
 
     recommendation_limit = max(
         1,
-        recommendation_limit,
+        min(
+            int(
+                recommendation_limit
+            ),
+            20,
+        ),
     )
 
-    recommendations = scored_animals[
+    # -----------------------------------------------------
+    # Normalize preference profile
+    # -----------------------------------------------------
+
+    preference_profile = (
+        _coerce_preference_profile(
+            preferences
+        )
+    )
+
+    required = preference_profile.get(
+        "required",
+        {},
+    )
+
+    if not isinstance(
+        required,
+        dict,
+    ):
+        required = {}
+
+    preferred = preference_profile.get(
+        "preferred",
+        {},
+    )
+
+    if not isinstance(
+        preferred,
+        dict,
+    ):
+        preferred = {}
+
+    # -----------------------------------------------------
+    # Metadata
+    # -----------------------------------------------------
+
+    metadata = preference_profile.get(
+        "metadata",
+        {},
+    )
+
+    if not isinstance(
+        metadata,
+        dict,
+    ):
+        metadata = {}
+
+    # -----------------------------------------------------
+    # Preferred confidence
+    #
+    # First try the new structured field.
+    # If it does not exist, fall back to the raw ML
+    # confidence dictionary already produced by app.py.
+    # -----------------------------------------------------
+
+    preferred_confidence = metadata.get(
+        "preferred_confidence"
+    )
+
+    if not isinstance(
+        preferred_confidence,
+        dict,
+    ):
+        preferred_confidence = metadata.get(
+            "confidence",
+            {},
+        )
+
+    if not isinstance(
+        preferred_confidence,
+        dict,
+    ):
+        preferred_confidence = {}
+
+    # -----------------------------------------------------
+    # Required constraint filtering
+    # -----------------------------------------------------
+
+    filter_result = (
+        filter_animals_by_required_constraints(
+            animals,
+            required,
+        )
+    )
+
+    # -----------------------------------------------------
+    # Exact / Alternative / No Match
+    # -----------------------------------------------------
+
+    fallback_result = resolve_fallback(
+        animals=animals,
+
+        preference_profile=(
+            preference_profile
+        ),
+
+        exact_matches=filter_result[
+            "exact_matches"
+        ],
+    )
+
+    mode = fallback_result[
+        "mode"
+    ]
+
+    candidates = fallback_result[
+        "candidates"
+    ]
+
+    message = fallback_result[
+        "message"
+    ]
+
+    # -----------------------------------------------------
+    # No candidates
+    # -----------------------------------------------------
+
+    if not candidates:
+
+        return _build_empty_ranking_result(
+            message=message,
+
+            total_scored=len(
+                animals
+            ),
+
+            mode=mode,
+
+            preference_profile=(
+                preference_profile
+            ),
+        )
+
+    # -----------------------------------------------------
+    # Compatibility scoring
+    # -----------------------------------------------------
+
+    ranked = rank_candidates(
+        candidates,
+        preferred,
+        preferred_confidence,
+    )[
         :recommendation_limit
     ]
+
+    # -----------------------------------------------------
+    # Attach explanation context
+    # -----------------------------------------------------
+
+    ranked = _attach_explanation_context(
+        recommendations=ranked,
+
+        required=required,
+
+        preferred=preferred,
+
+        mode=mode,
+    )
+
+    # -----------------------------------------------------
+    # Generate explanations
+    # -----------------------------------------------------
+
+    success_response = (
+        build_success_response(
+            ranked,
+            message,
+        )
+    )
+
+    recommendations = (
+        _apply_api_compatibility_fields(
+            success_response[
+                "recommendations"
+            ]
+        )
+    )
+
+    # -----------------------------------------------------
+    # Best + remaining recommendations
+    # -----------------------------------------------------
 
     best_match = (
         recommendations[0]
@@ -800,99 +508,52 @@ def rank_animals(
         else None
     )
 
-    other = (
+    other_recommendations = (
         recommendations[1:]
-        if len(recommendations) > 1
+        if len(
+            recommendations
+        ) > 1
         else []
     )
 
-    # =====================================================
-    # SCORE NORMALIZATION
-    # Make the top match stand out more.
-    # =====================================================
-
-    if recommendations:
-
-        highest = recommendations[0][
-            "match_score"
-        ]
-
-        second = (
-            recommendations[1]["match_score"]
-            if len(recommendations) > 1
-            else highest
-        )
-
-        if highest - second < 8:
-
-            recommendations[0][
-                "match_score"
-            ] = min(
-                100,
-                highest + 8,
-            )
-
-            recommendations[0][
-                "matchPercentage"
-            ] = recommendations[0][
-                "match_score"
-            ]
-
-            recommendations[0][
-                "compatibility_score"
-            ] = recommendations[0][
-                "match_score"
-            ]
-
-    # =====================================================
-    # QUALITY LABEL
-    # =====================================================
-
-    for animal in recommendations:
-
-        score = animal[
-            "match_score"
-        ]
-
-        if score >= 90:
-
-            animal[
-                "match_level"
-            ] = "Excellent"
-
-        elif score >= 80:
-
-            animal[
-                "match_level"
-            ] = "Very Good"
-
-        elif score >= 70:
-
-            animal[
-                "match_level"
-            ] = "Good"
-
-        elif score >= 60:
-
-            animal[
-                "match_level"
-            ] = "Fair"
-
-        else:
-
-            animal[
-                "match_level"
-            ] = "Low"
+    # -----------------------------------------------------
+    # Final API response
+    # -----------------------------------------------------
 
     return {
+        **success_response,
 
-        "best_match": best_match,
+        "best_match": (
+            best_match
+        ),
 
-        "other_recommendations": other,
+        "other_recommendations": (
+            other_recommendations
+        ),
 
-        "recommendations": recommendations,
+        "recommendations": (
+            recommendations
+        ),
 
         "total_scored": len(
-            scored_animals
+            animals
+        ),
+
+        "exact_match_count": (
+            filter_result[
+                "exact_match_count"
+            ]
+        ),
+
+        "mode": mode,
+
+        "preference_profile": (
+            preference_profile
+        ),
+
+        "confidence_weighting_available": (
+            bool(
+                preferred_confidence
+            )
         ),
     }

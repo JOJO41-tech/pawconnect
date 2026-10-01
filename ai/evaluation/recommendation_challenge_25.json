@@ -1,0 +1,845 @@
+[
+  {
+    "id": "R01",
+    "category": "exact_match",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "energy_level": "medium",
+        "temperament": ["friendly"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Buddy",
+        "type": "dog",
+        "energy_level": "medium",
+        "temperament": "friendly, playful",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Max",
+        "type": "dog",
+        "energy_level": "high",
+        "temperament": "playful",
+        "adoption_status": "available"
+      },
+      {
+        "id": 3,
+        "name": "Leo",
+        "type": "cat",
+        "energy_level": "medium",
+        "temperament": "friendly",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R02",
+    "category": "exact_match",
+    "preferences": {
+      "required": {
+        "pet_type": "cat",
+        "gender": "female"
+      },
+      "preferred": {
+        "temperament": ["calm"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Maya",
+        "type": "cat",
+        "gender": "female",
+        "temperament": "calm, friendly",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Loki",
+        "type": "cat",
+        "gender": "male",
+        "temperament": "calm",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R03",
+    "category": "exact_match",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "size": "small"
+      },
+      "preferred": {
+        "apartment_friendly": true
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Pip",
+        "type": "dog",
+        "size": "small",
+        "apartment_friendly": true,
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Rocky",
+        "type": "dog",
+        "size": "large",
+        "apartment_friendly": true,
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R04",
+    "category": "exact_match",
+    "preferences": {
+      "required": {
+        "pet_type": "cat",
+        "location": "Bangkok"
+      },
+      "preferred": {
+        "pet_friendly": true
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Nina",
+        "type": "cat",
+        "location": "Bangkok",
+        "pet_friendly": true,
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Coco",
+        "type": "cat",
+        "location": "Chiang Mai",
+        "pet_friendly": true,
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R05",
+    "category": "exact_match",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "breed": "Labrador Retriever"
+      },
+      "preferred": {
+        "child_friendly": true
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Charlie",
+        "type": "dog",
+        "breed": "Labrador Retriever",
+        "child_friendly": true,
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Finn",
+        "type": "dog",
+        "breed": "Beagle",
+        "child_friendly": true,
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R06",
+    "category": "preference_ranking",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "energy_level": "low"
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Slow",
+        "type": "dog",
+        "energy_level": "low",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Dash",
+        "type": "dog",
+        "energy_level": "high",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R07",
+    "category": "preference_ranking",
+    "preferences": {
+      "required": {
+        "pet_type": "cat"
+      },
+      "preferred": {
+        "temperament": ["friendly", "playful"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Mimi",
+        "type": "cat",
+        "temperament": "friendly, playful",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Snow",
+        "type": "cat",
+        "temperament": "quiet",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R08",
+    "category": "preference_ranking",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "child_friendly": true,
+        "pet_friendly": true
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Family",
+        "type": "dog",
+        "child_friendly": true,
+        "pet_friendly": true,
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Solo",
+        "type": "dog",
+        "child_friendly": true,
+        "pet_friendly": false,
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R09",
+    "category": "preference_ranking",
+    "preferences": {
+      "required": {
+        "pet_type": "cat"
+      },
+      "preferred": {
+        "apartment_friendly": true,
+        "energy_level": "low"
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Luna",
+        "type": "cat",
+        "apartment_friendly": true,
+        "energy_level": "low",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Spark",
+        "type": "cat",
+        "apartment_friendly": false,
+        "energy_level": "high",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R10",
+    "category": "preference_ranking",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "experience_level": "beginner"
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Easy",
+        "type": "dog",
+        "experience_required": "beginner",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Expert",
+        "type": "dog",
+        "experience_required": "experienced",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R11",
+    "category": "hard_constraint",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "temperament": ["friendly"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Leo",
+        "type": "cat",
+        "temperament": "friendly",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Buddy",
+        "type": "dog",
+        "temperament": "quiet",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 2,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R12",
+    "category": "hard_constraint",
+    "preferences": {
+      "required": {
+        "pet_type": "cat"
+      },
+      "preferred": {
+        "energy_level": "medium"
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Doggo",
+        "type": "dog",
+        "energy_level": "medium",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Kitty",
+        "type": "cat",
+        "energy_level": "high",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 2,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R13",
+    "category": "hard_constraint",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "gender": "female"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "MaleDog",
+        "type": "dog",
+        "gender": "male",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "FemaleDog",
+        "type": "dog",
+        "gender": "female",
+        "adoption_status": "available"
+      },
+      {
+        "id": 3,
+        "name": "FemaleCat",
+        "type": "cat",
+        "gender": "female",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 2,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R14",
+    "category": "hard_constraint",
+    "preferences": {
+      "required": {
+        "pet_type": "cat",
+        "location": "Bangkok"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "BangkokDog",
+        "type": "dog",
+        "location": "Bangkok",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "BangkokCat",
+        "type": "cat",
+        "location": "Bangkok",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 2,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R15",
+    "category": "hard_constraint",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "UnavailableDog",
+        "type": "dog",
+        "adoption_status": "adopted"
+      },
+      {
+        "id": 2,
+        "name": "AvailableDog",
+        "type": "dog",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 2,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R16",
+    "category": "fallback",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "breed": "Golden Retriever"
+      },
+      "preferred": {
+        "temperament": ["friendly"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Lab",
+        "type": "dog",
+        "breed": "Labrador Retriever",
+        "temperament": "friendly",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Cat",
+        "type": "cat",
+        "breed": "Golden Retriever",
+        "temperament": "friendly",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "alternative",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R17",
+    "category": "fallback",
+    "preferences": {
+      "required": {
+        "pet_type": "cat",
+        "gender": "female",
+        "location": "Bangkok"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "NearMatch",
+        "type": "cat",
+        "gender": "female",
+        "location": "Pathum Thani",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "WeakMatch",
+        "type": "cat",
+        "gender": "male",
+        "location": "Chiang Mai",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "alternative",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R18",
+    "category": "fallback",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "size": "small",
+        "location": "Bangkok"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "SmallOutside",
+        "type": "dog",
+        "size": "small",
+        "location": "Pathum Thani",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "LargeOutside",
+        "type": "dog",
+        "size": "large",
+        "location": "Chiang Mai",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "alternative",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R19",
+    "category": "fallback",
+    "preferences": {
+      "required": {
+        "pet_type": "cat",
+        "breed": "Sphynx",
+        "gender": "male"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "MaleOtherBreed",
+        "type": "cat",
+        "breed": "Persian",
+        "gender": "male",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "FemaleOtherBreed",
+        "type": "cat",
+        "breed": "Persian",
+        "gender": "female",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "alternative",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R20",
+    "category": "no_match",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Cat1",
+        "type": "cat",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "Cat2",
+        "type": "cat",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "no_match",
+      "top1_id": null,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R21",
+    "category": "no_match",
+    "preferences": {
+      "required": {
+        "pet_type": "cat"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "Dog1",
+        "type": "dog",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "no_match",
+      "top1_id": null,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R22",
+    "category": "no_match",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {}
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "DogTaken",
+        "type": "dog",
+        "adoption_status": "adopted"
+      }
+    ],
+    "expected": {
+      "mode": "no_match",
+      "top1_id": null,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R23",
+    "category": "edge",
+    "preferences": {
+      "required": {
+        "pet_type": "dog"
+      },
+      "preferred": {
+        "energy_level": "medium"
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "A",
+        "type": "dog",
+        "energy_level": "medium",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "B",
+        "type": "dog",
+        "energy_level": "medium",
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  },
+  {
+    "id": "R24",
+    "category": "edge",
+    "preferences": {
+      "required": {
+        "pet_type": "cat"
+      },
+      "preferred": {
+        "temperament": ["friendly"]
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "FriendlyCat",
+        "type": "cat",
+        "temperament": "friendly",
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "UnavailableFriendlyCat",
+        "type": "cat",
+        "temperament": "friendly",
+        "adoption_status": "adopted"
+      }
+    ],
+    "expected": {
+      "mode": "exact",
+      "top1_id": 1,
+      "allowed_pet_type": "cat"
+    }
+  },
+  {
+    "id": "R25",
+    "category": "edge",
+    "preferences": {
+      "required": {
+        "pet_type": "dog",
+        "breed": "Poodle"
+      },
+      "preferred": {
+        "apartment_friendly": true
+      }
+    },
+    "animals": [
+      {
+        "id": 1,
+        "name": "ApartmentDog",
+        "type": "dog",
+        "breed": "Beagle",
+        "apartment_friendly": true,
+        "adoption_status": "available"
+      },
+      {
+        "id": 2,
+        "name": "ApartmentCat",
+        "type": "cat",
+        "breed": "Poodle",
+        "apartment_friendly": true,
+        "adoption_status": "available"
+      }
+    ],
+    "expected": {
+      "mode": "alternative",
+      "top1_id": 1,
+      "allowed_pet_type": "dog"
+    }
+  }
+]

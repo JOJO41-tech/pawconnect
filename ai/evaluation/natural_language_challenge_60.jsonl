@@ -1,0 +1,60 @@
+{"id":"F01","category":"direct","text":"I want a dog.","expected":{"pet_type":"dog"}}
+{"id":"F02","category":"direct","text":"I would like to adopt a cat.","expected":{"pet_type":"cat"}}
+{"id":"F03","category":"direct","text":"I want a female dog.","expected":{"pet_type":"dog","gender":"female"}}
+{"id":"F04","category":"direct","text":"I am looking for a male cat.","expected":{"pet_type":"cat","gender":"male"}}
+{"id":"F05","category":"direct","text":"I want a small dog.","expected":{"pet_type":"dog","size":"small"}}
+{"id":"F06","category":"direct","text":"I would prefer a large dog.","expected":{"pet_type":"dog","size":"large"}}
+{"id":"F07","category":"direct","text":"I want a three-year-old cat.","expected":{"pet_type":"cat","age_years":3}}
+{"id":"F08","category":"direct","text":"I am looking for a six-month-old dog.","expected":{"pet_type":"dog","age_months":6}}
+{"id":"F09","category":"direct","text":"I want a Labrador Retriever.","expected":{"pet_type":"dog","breed":"Labrador Retriever"}}
+{"id":"F10","category":"direct","text":"I want a Persian cat in Bangkok.","expected":{"pet_type":"cat","breed":"Persian","location":"Bangkok"}}
+{"id":"F11","category":"size_energy","text":"I want a medium-energy cat.","expected":{"pet_type":"cat","energy_level":"medium","size":null}}
+{"id":"F12","category":"size_energy","text":"I want a medium-sized cat.","expected":{"pet_type":"cat","size":"medium"}}
+{"id":"F13","category":"size_energy","text":"I want a high-energy small dog.","expected":{"pet_type":"dog","energy_level":"high","size":"small"}}
+{"id":"F14","category":"size_energy","text":"I want a large dog with low energy.","expected":{"pet_type":"dog","size":"large","energy_level":"low"}}
+{"id":"F15","category":"size_energy","text":"I prefer a medium-sized dog that has medium energy.","expected":{"pet_type":"dog","size":"medium","energy_level":"medium"}}
+{"id":"F16","category":"size_energy","text":"I want an energetic cat, but its physical size does not matter.","expected":{"pet_type":"cat","energy_level":"high"}}
+{"id":"F17","category":"size_energy","text":"I want a small quiet dog, not necessarily a low-energy one.","expected":{"pet_type":"dog","size":"small","temperament":["quiet"]}}
+{"id":"F18","category":"size_energy","text":"I need a low-energy pet and I prefer cats.","expected":{"pet_type":"cat","energy_level":"low"}}
+{"id":"F19","category":"lifestyle","text":"I am a first-time owner and want a dog.","expected":{"pet_type":"dog","experience_level":"beginner"}}
+{"id":"F20","category":"lifestyle","text":"I have owned several pets before and want a cat.","expected":{"pet_type":"cat","experience_level":"experienced"}}
+{"id":"F21","category":"lifestyle","text":"I live in an apartment and want a cat that is suitable for apartment living.","expected":{"pet_type":"cat","apartment_friendly":true}}
+{"id":"F22","category":"lifestyle","text":"I have two children, so I want a dog that is good with children.","expected":{"pet_type":"dog","child_friendly":true}}
+{"id":"F23","category":"lifestyle","text":"I already have another pet and need a cat that can live with other pets.","expected":{"pet_type":"cat","pet_friendly":true}}
+{"id":"F24","category":"lifestyle","text":"I work from home and have plenty of time for a dog.","expected":{"pet_type":"dog","available_attention_hours":8}}
+{"id":"F25","category":"lifestyle","text":"I am new to pet ownership and need a calm cat.","expected":{"pet_type":"cat","experience_level":"beginner","temperament":["calm"]}}
+{"id":"F26","category":"lifestyle","text":"I am an experienced owner looking for an energetic dog.","expected":{"pet_type":"dog","experience_level":"experienced","energy_level":"high"}}
+{"id":"F27","category":"lifestyle","text":"My apartment is small, so I need an apartment-friendly dog.","expected":{"pet_type":"dog","apartment_friendly":true}}
+{"id":"F28","category":"lifestyle","text":"The pet must be comfortable around both children and other animals. I prefer a cat.","expected":{"pet_type":"cat","child_friendly":true,"pet_friendly":true}}
+{"id":"F29","category":"multi_constraint","text":"I want a friendly, playful female dog.","expected":{"pet_type":"dog","gender":"female","temperament":["friendly","playful"]}}
+{"id":"F30","category":"multi_constraint","text":"I want a calm male cat that is good with children.","expected":{"pet_type":"cat","gender":"male","child_friendly":true,"temperament":["calm"]}}
+{"id":"F31","category":"multi_constraint","text":"I want a small low-energy female dog that is suitable for an apartment.","expected":{"pet_type":"dog","size":"small","gender":"female","energy_level":"low","apartment_friendly":true}}
+{"id":"F32","category":"multi_constraint","text":"I am a beginner owner looking for a friendly cat that can live with my other pet.","expected":{"pet_type":"cat","experience_level":"beginner","pet_friendly":true,"temperament":["friendly"]}}
+{"id":"F33","category":"multi_constraint","text":"I want a medium-sized energetic male dog in Bangkok.","expected":{"pet_type":"dog","size":"medium","energy_level":"high","gender":"male","location":"Bangkok"}}
+{"id":"F34","category":"multi_constraint","text":"I want a two-year-old female Persian cat in Pathum Thani.","expected":{"pet_type":"cat","breed":"Persian","age_years":2,"gender":"female","location":"Pathum Thani"}}
+{"id":"F35","category":"multi_constraint","text":"I want a Golden Retriever that is friendly, playful, and good with children.","expected":{"pet_type":"dog","breed":"Golden Retriever","child_friendly":true,"temperament":["friendly","playful"]}}
+{"id":"F36","category":"multi_constraint","text":"I need an apartment-friendly, low-energy cat and I am a first-time owner.","expected":{"pet_type":"cat","energy_level":"low","apartment_friendly":true,"experience_level":"beginner"}}
+{"id":"F37","category":"multi_constraint","text":"I want a one-year-old male Labrador Retriever in Bangkok that is friendly.","expected":{"pet_type":"dog","breed":"Labrador Retriever","age_years":1,"gender":"male","location":"Bangkok","temperament":["friendly"]}}
+{"id":"F38","category":"multi_constraint","text":"I want a quiet, calm cat that gets along with pets and children.","expected":{"pet_type":"cat","pet_friendly":true,"child_friendly":true,"temperament":["quiet","calm"]}}
+{"id":"F39","category":"indirect","text":"Dogs are more my thing. I'd love one that's playful.","expected":{"pet_type":"dog","temperament":["playful"]}}
+{"id":"F40","category":"indirect","text":"I'm definitely more of a cat person, and I'd like a calm companion.","expected":{"pet_type":"cat","temperament":["calm"]}}
+{"id":"F41","category":"indirect","text":"This would be my very first pet. I'm hoping for a friendly dog.","expected":{"pet_type":"dog","experience_level":"beginner","temperament":["friendly"]}}
+{"id":"F42","category":"indirect","text":"I've raised dogs for years. Now I'm looking for an energetic one.","expected":{"pet_type":"dog","experience_level":"experienced","energy_level":"high"}}
+{"id":"F43","category":"indirect","text":"There are young kids at home, so any cat I adopt needs to be comfortable with children.","expected":{"pet_type":"cat","child_friendly":true}}
+{"id":"F44","category":"indirect","text":"My dog at home needs a new feline friend that gets along with other animals.","expected":{"pet_type":"cat","pet_friendly":true}}
+{"id":"F45","category":"indirect","text":"Space is limited where I live, so I'd like a dog suited to apartment life.","expected":{"pet_type":"dog","apartment_friendly":true}}
+{"id":"F46","category":"indirect","text":"I'm around the house most of the day and can give a cat lots of attention.","expected":{"pet_type":"cat","available_attention_hours":8}}
+{"id":"F47","category":"negation","text":"I want a dog, not a cat.","expected":{"pet_type":"dog"}}
+{"id":"F48","category":"negation","text":"I don't want a dog. I'm looking for a cat.","expected":{"pet_type":"cat"}}
+{"id":"F49","category":"negation","text":"My friend suggested a cat, but I actually want a dog.","expected":{"pet_type":"dog"}}
+{"id":"F50","category":"negation","text":"I don't need a small dog. I just want a friendly dog.","expected":{"pet_type":"dog","temperament":["friendly"]}}
+{"id":"F51","category":"negation","text":"I want a cat, but I don't care whether it is male or female.","expected":{"pet_type":"cat"}}
+{"id":"F52","category":"negation","text":"I don't care about breed. I need a calm dog that is good with children.","expected":{"pet_type":"dog","child_friendly":true,"temperament":["calm"]}}
+{"id":"F53","category":"negation","text":"I want an energetic dog, not a calm one.","expected":{"pet_type":"dog","energy_level":"high"}}
+{"id":"F54","category":"edge_case","text":"Breed doesn't matter to me, but the pet absolutely has to be a dog.","expected":{"pet_type":"dog"}}
+{"id":"F55","category":"edge_case","text":"I prefer a Golden Retriever, although another friendly dog would also be fine.","expected":{"pet_type":"dog","breed":"Golden Retriever","temperament":["friendly"]}}
+{"id":"F56","category":"edge_case","text":"I want a cat. Size isn't important, but I would like medium energy.","expected":{"pet_type":"cat","energy_level":"medium"}}
+{"id":"F57","category":"edge_case","text":"I live in Bangkok, but location doesn't matter for the pet. I just want a playful dog.","expected":{"pet_type":"dog","temperament":["playful"]}}
+{"id":"F58","category":"edge_case","text":"I have children, but that doesn't mean the pet must be child-friendly. I only require a calm cat.","expected":{"pet_type":"cat","temperament":["calm"]}}
+{"id":"F59","category":"edge_case","text":"I'm experienced with cats, but this time I want a beginner-friendly dog.","expected":{"pet_type":"dog","experience_level":"beginner"}}
+{"id":"F60","category":"edge_case","text":"Someone told me energetic dogs are fun, but I actually want a low-energy cat.","expected":{"pet_type":"cat","energy_level":"low"}}

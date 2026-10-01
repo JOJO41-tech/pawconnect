@@ -1,0 +1,151 @@
+request_id,category,text,field,expected_value,positive_field (null = the 1 negative expectation; 149 positive + 1 negative = 150 fields)
+F01,direct,I want a dog.,pet_type,"""dog""",True
+F02,direct,I would like to adopt a cat.,pet_type,"""cat""",True
+F03,direct,I want a female dog.,pet_type,"""dog""",True
+F03,direct,I want a female dog.,gender,"""female""",True
+F04,direct,I am looking for a male cat.,pet_type,"""cat""",True
+F04,direct,I am looking for a male cat.,gender,"""male""",True
+F05,direct,I want a small dog.,pet_type,"""dog""",True
+F05,direct,I want a small dog.,size,"""small""",True
+F06,direct,I would prefer a large dog.,pet_type,"""dog""",True
+F06,direct,I would prefer a large dog.,size,"""large""",True
+F07,direct,I want a three-year-old cat.,pet_type,"""cat""",True
+F07,direct,I want a three-year-old cat.,age_years,3,True
+F08,direct,I am looking for a six-month-old dog.,pet_type,"""dog""",True
+F08,direct,I am looking for a six-month-old dog.,age_months,6,True
+F09,direct,I want a Labrador Retriever.,pet_type,"""dog""",True
+F09,direct,I want a Labrador Retriever.,breed,"""Labrador Retriever""",True
+F10,direct,I want a Persian cat in Bangkok.,pet_type,"""cat""",True
+F10,direct,I want a Persian cat in Bangkok.,breed,"""Persian""",True
+F10,direct,I want a Persian cat in Bangkok.,location,"""Bangkok""",True
+F11,size_energy,I want a medium-energy cat.,pet_type,"""cat""",True
+F11,size_energy,I want a medium-energy cat.,energy_level,"""medium""",True
+F11,size_energy,I want a medium-energy cat.,size,null (must not be predicted),False
+F12,size_energy,I want a medium-sized cat.,pet_type,"""cat""",True
+F12,size_energy,I want a medium-sized cat.,size,"""medium""",True
+F13,size_energy,I want a high-energy small dog.,pet_type,"""dog""",True
+F13,size_energy,I want a high-energy small dog.,energy_level,"""high""",True
+F13,size_energy,I want a high-energy small dog.,size,"""small""",True
+F14,size_energy,I want a large dog with low energy.,pet_type,"""dog""",True
+F14,size_energy,I want a large dog with low energy.,size,"""large""",True
+F14,size_energy,I want a large dog with low energy.,energy_level,"""low""",True
+F15,size_energy,I prefer a medium-sized dog that has medium energy.,pet_type,"""dog""",True
+F15,size_energy,I prefer a medium-sized dog that has medium energy.,size,"""medium""",True
+F15,size_energy,I prefer a medium-sized dog that has medium energy.,energy_level,"""medium""",True
+F16,size_energy,"I want an energetic cat, but its physical size does not matter.",pet_type,"""cat""",True
+F16,size_energy,"I want an energetic cat, but its physical size does not matter.",energy_level,"""high""",True
+F17,size_energy,"I want a small quiet dog, not necessarily a low-energy one.",pet_type,"""dog""",True
+F17,size_energy,"I want a small quiet dog, not necessarily a low-energy one.",size,"""small""",True
+F17,size_energy,"I want a small quiet dog, not necessarily a low-energy one.",temperament,"[""quiet""]",True
+F18,size_energy,I need a low-energy pet and I prefer cats.,pet_type,"""cat""",True
+F18,size_energy,I need a low-energy pet and I prefer cats.,energy_level,"""low""",True
+F19,lifestyle,I am a first-time owner and want a dog.,pet_type,"""dog""",True
+F19,lifestyle,I am a first-time owner and want a dog.,experience_level,"""beginner""",True
+F20,lifestyle,I have owned several pets before and want a cat.,pet_type,"""cat""",True
+F20,lifestyle,I have owned several pets before and want a cat.,experience_level,"""experienced""",True
+F21,lifestyle,I live in an apartment and want a cat that is suitable for apartment living.,pet_type,"""cat""",True
+F21,lifestyle,I live in an apartment and want a cat that is suitable for apartment living.,apartment_friendly,true,True
+F22,lifestyle,"I have two children, so I want a dog that is good with children.",pet_type,"""dog""",True
+F22,lifestyle,"I have two children, so I want a dog that is good with children.",child_friendly,true,True
+F23,lifestyle,I already have another pet and need a cat that can live with other pets.,pet_type,"""cat""",True
+F23,lifestyle,I already have another pet and need a cat that can live with other pets.,pet_friendly,true,True
+F24,lifestyle,I work from home and have plenty of time for a dog.,pet_type,"""dog""",True
+F24,lifestyle,I work from home and have plenty of time for a dog.,available_attention_hours,8,True
+F25,lifestyle,I am new to pet ownership and need a calm cat.,pet_type,"""cat""",True
+F25,lifestyle,I am new to pet ownership and need a calm cat.,experience_level,"""beginner""",True
+F25,lifestyle,I am new to pet ownership and need a calm cat.,temperament,"[""calm""]",True
+F26,lifestyle,I am an experienced owner looking for an energetic dog.,pet_type,"""dog""",True
+F26,lifestyle,I am an experienced owner looking for an energetic dog.,experience_level,"""experienced""",True
+F26,lifestyle,I am an experienced owner looking for an energetic dog.,energy_level,"""high""",True
+F27,lifestyle,"My apartment is small, so I need an apartment-friendly dog.",pet_type,"""dog""",True
+F27,lifestyle,"My apartment is small, so I need an apartment-friendly dog.",apartment_friendly,true,True
+F28,lifestyle,The pet must be comfortable around both children and other animals. I prefer a cat.,pet_type,"""cat""",True
+F28,lifestyle,The pet must be comfortable around both children and other animals. I prefer a cat.,child_friendly,true,True
+F28,lifestyle,The pet must be comfortable around both children and other animals. I prefer a cat.,pet_friendly,true,True
+F29,multi_constraint,"I want a friendly, playful female dog.",pet_type,"""dog""",True
+F29,multi_constraint,"I want a friendly, playful female dog.",gender,"""female""",True
+F29,multi_constraint,"I want a friendly, playful female dog.",temperament,"[""friendly"", ""playful""]",True
+F30,multi_constraint,I want a calm male cat that is good with children.,pet_type,"""cat""",True
+F30,multi_constraint,I want a calm male cat that is good with children.,gender,"""male""",True
+F30,multi_constraint,I want a calm male cat that is good with children.,child_friendly,true,True
+F30,multi_constraint,I want a calm male cat that is good with children.,temperament,"[""calm""]",True
+F31,multi_constraint,I want a small low-energy female dog that is suitable for an apartment.,pet_type,"""dog""",True
+F31,multi_constraint,I want a small low-energy female dog that is suitable for an apartment.,size,"""small""",True
+F31,multi_constraint,I want a small low-energy female dog that is suitable for an apartment.,gender,"""female""",True
+F31,multi_constraint,I want a small low-energy female dog that is suitable for an apartment.,energy_level,"""low""",True
+F31,multi_constraint,I want a small low-energy female dog that is suitable for an apartment.,apartment_friendly,true,True
+F32,multi_constraint,I am a beginner owner looking for a friendly cat that can live with my other pet.,pet_type,"""cat""",True
+F32,multi_constraint,I am a beginner owner looking for a friendly cat that can live with my other pet.,experience_level,"""beginner""",True
+F32,multi_constraint,I am a beginner owner looking for a friendly cat that can live with my other pet.,pet_friendly,true,True
+F32,multi_constraint,I am a beginner owner looking for a friendly cat that can live with my other pet.,temperament,"[""friendly""]",True
+F33,multi_constraint,I want a medium-sized energetic male dog in Bangkok.,pet_type,"""dog""",True
+F33,multi_constraint,I want a medium-sized energetic male dog in Bangkok.,size,"""medium""",True
+F33,multi_constraint,I want a medium-sized energetic male dog in Bangkok.,energy_level,"""high""",True
+F33,multi_constraint,I want a medium-sized energetic male dog in Bangkok.,gender,"""male""",True
+F33,multi_constraint,I want a medium-sized energetic male dog in Bangkok.,location,"""Bangkok""",True
+F34,multi_constraint,I want a two-year-old female Persian cat in Pathum Thani.,pet_type,"""cat""",True
+F34,multi_constraint,I want a two-year-old female Persian cat in Pathum Thani.,breed,"""Persian""",True
+F34,multi_constraint,I want a two-year-old female Persian cat in Pathum Thani.,age_years,2,True
+F34,multi_constraint,I want a two-year-old female Persian cat in Pathum Thani.,gender,"""female""",True
+F34,multi_constraint,I want a two-year-old female Persian cat in Pathum Thani.,location,"""Pathum Thani""",True
+F35,multi_constraint,"I want a Golden Retriever that is friendly, playful, and good with children.",pet_type,"""dog""",True
+F35,multi_constraint,"I want a Golden Retriever that is friendly, playful, and good with children.",breed,"""Golden Retriever""",True
+F35,multi_constraint,"I want a Golden Retriever that is friendly, playful, and good with children.",child_friendly,true,True
+F35,multi_constraint,"I want a Golden Retriever that is friendly, playful, and good with children.",temperament,"[""friendly"", ""playful""]",True
+F36,multi_constraint,"I need an apartment-friendly, low-energy cat and I am a first-time owner.",pet_type,"""cat""",True
+F36,multi_constraint,"I need an apartment-friendly, low-energy cat and I am a first-time owner.",energy_level,"""low""",True
+F36,multi_constraint,"I need an apartment-friendly, low-energy cat and I am a first-time owner.",apartment_friendly,true,True
+F36,multi_constraint,"I need an apartment-friendly, low-energy cat and I am a first-time owner.",experience_level,"""beginner""",True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,pet_type,"""dog""",True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,breed,"""Labrador Retriever""",True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,age_years,1,True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,gender,"""male""",True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,location,"""Bangkok""",True
+F37,multi_constraint,I want a one-year-old male Labrador Retriever in Bangkok that is friendly.,temperament,"[""friendly""]",True
+F38,multi_constraint,"I want a quiet, calm cat that gets along with pets and children.",pet_type,"""cat""",True
+F38,multi_constraint,"I want a quiet, calm cat that gets along with pets and children.",pet_friendly,true,True
+F38,multi_constraint,"I want a quiet, calm cat that gets along with pets and children.",child_friendly,true,True
+F38,multi_constraint,"I want a quiet, calm cat that gets along with pets and children.",temperament,"[""quiet"", ""calm""]",True
+F39,indirect,Dogs are more my thing. I'd love one that's playful.,pet_type,"""dog""",True
+F39,indirect,Dogs are more my thing. I'd love one that's playful.,temperament,"[""playful""]",True
+F40,indirect,"I'm definitely more of a cat person, and I'd like a calm companion.",pet_type,"""cat""",True
+F40,indirect,"I'm definitely more of a cat person, and I'd like a calm companion.",temperament,"[""calm""]",True
+F41,indirect,This would be my very first pet. I'm hoping for a friendly dog.,pet_type,"""dog""",True
+F41,indirect,This would be my very first pet. I'm hoping for a friendly dog.,experience_level,"""beginner""",True
+F41,indirect,This would be my very first pet. I'm hoping for a friendly dog.,temperament,"[""friendly""]",True
+F42,indirect,I've raised dogs for years. Now I'm looking for an energetic one.,pet_type,"""dog""",True
+F42,indirect,I've raised dogs for years. Now I'm looking for an energetic one.,experience_level,"""experienced""",True
+F42,indirect,I've raised dogs for years. Now I'm looking for an energetic one.,energy_level,"""high""",True
+F43,indirect,"There are young kids at home, so any cat I adopt needs to be comfortable with children.",pet_type,"""cat""",True
+F43,indirect,"There are young kids at home, so any cat I adopt needs to be comfortable with children.",child_friendly,true,True
+F44,indirect,My dog at home needs a new feline friend that gets along with other animals.,pet_type,"""cat""",True
+F44,indirect,My dog at home needs a new feline friend that gets along with other animals.,pet_friendly,true,True
+F45,indirect,"Space is limited where I live, so I'd like a dog suited to apartment life.",pet_type,"""dog""",True
+F45,indirect,"Space is limited where I live, so I'd like a dog suited to apartment life.",apartment_friendly,true,True
+F46,indirect,I'm around the house most of the day and can give a cat lots of attention.,pet_type,"""cat""",True
+F46,indirect,I'm around the house most of the day and can give a cat lots of attention.,available_attention_hours,8,True
+F47,negation,"I want a dog, not a cat.",pet_type,"""dog""",True
+F48,negation,I don't want a dog. I'm looking for a cat.,pet_type,"""cat""",True
+F49,negation,"My friend suggested a cat, but I actually want a dog.",pet_type,"""dog""",True
+F50,negation,I don't need a small dog. I just want a friendly dog.,pet_type,"""dog""",True
+F50,negation,I don't need a small dog. I just want a friendly dog.,temperament,"[""friendly""]",True
+F51,negation,"I want a cat, but I don't care whether it is male or female.",pet_type,"""cat""",True
+F52,negation,I don't care about breed. I need a calm dog that is good with children.,pet_type,"""dog""",True
+F52,negation,I don't care about breed. I need a calm dog that is good with children.,child_friendly,true,True
+F52,negation,I don't care about breed. I need a calm dog that is good with children.,temperament,"[""calm""]",True
+F53,negation,"I want an energetic dog, not a calm one.",pet_type,"""dog""",True
+F53,negation,"I want an energetic dog, not a calm one.",energy_level,"""high""",True
+F54,edge_case,"Breed doesn't matter to me, but the pet absolutely has to be a dog.",pet_type,"""dog""",True
+F55,edge_case,"I prefer a Golden Retriever, although another friendly dog would also be fine.",pet_type,"""dog""",True
+F55,edge_case,"I prefer a Golden Retriever, although another friendly dog would also be fine.",breed,"""Golden Retriever""",True
+F55,edge_case,"I prefer a Golden Retriever, although another friendly dog would also be fine.",temperament,"[""friendly""]",True
+F56,edge_case,"I want a cat. Size isn't important, but I would like medium energy.",pet_type,"""cat""",True
+F56,edge_case,"I want a cat. Size isn't important, but I would like medium energy.",energy_level,"""medium""",True
+F57,edge_case,"I live in Bangkok, but location doesn't matter for the pet. I just want a playful dog.",pet_type,"""dog""",True
+F57,edge_case,"I live in Bangkok, but location doesn't matter for the pet. I just want a playful dog.",temperament,"[""playful""]",True
+F58,edge_case,"I have children, but that doesn't mean the pet must be child-friendly. I only require a calm cat.",pet_type,"""cat""",True
+F58,edge_case,"I have children, but that doesn't mean the pet must be child-friendly. I only require a calm cat.",temperament,"[""calm""]",True
+F59,edge_case,"I'm experienced with cats, but this time I want a beginner-friendly dog.",pet_type,"""dog""",True
+F59,edge_case,"I'm experienced with cats, but this time I want a beginner-friendly dog.",experience_level,"""beginner""",True
+F60,edge_case,"Someone told me energetic dogs are fun, but I actually want a low-energy cat.",pet_type,"""cat""",True
+F60,edge_case,"Someone told me energetic dogs are fun, but I actually want a low-energy cat.",energy_level,"""low""",True
